@@ -426,14 +426,19 @@ test_cc_examples: cc
 	$(MAKE) rcc_linear_programming
 	$(MAKE) rcc_integer_programming
 	$(MAKE) rcc_constraint_programming_cp
+	$(MAKE) rcc_constraint_programming_sat
 	$(MAKE) rcc_rabbits_pheasants_cp
+	$(MAKE) rcc_rabbits_pheasants_sat
 	$(MAKE) rcc_tsp
 	$(MAKE) rcc_vrp
 	$(MAKE) rcc_knapsack
 	$(MAKE) rcc_max_flow
 	$(MAKE) rcc_min_cost_flow
+	$(MAKE) rcc_assignment
 	$(MAKE) rcc_nurses_cp
+	$(MAKE) rcc_nurses_sat
 	$(MAKE) rcc_job_shop_cp
+	$(MAKE) rcc_job_shop_sat
 	$(MAKE) rcc_costas_array
 	$(MAKE) rcc_cryptarithm
 	$(MAKE) rcc_cvrp_disjoint_tw
@@ -483,14 +488,19 @@ check_cc_examples:
 	$(MAKE) rcc_linear_programming
 	$(MAKE) rcc_integer_programming
 	$(MAKE) rcc_constraint_programming_cp
+	$(MAKE) rcc_constraint_programming_sat
 	$(MAKE) rcc_rabbits_pheasants_cp
+	$(MAKE) rcc_rabbits_pheasants_sat
 	$(MAKE) rcc_tsp
 	$(MAKE) rcc_vrp
 	$(MAKE) rcc_knapsack
 	$(MAKE) rcc_max_flow
 	$(MAKE) rcc_min_cost_flow
+	$(MAKE) rcc_assignment
 	$(MAKE) rcc_nurses_cp
+	$(MAKE) rcc_nurses_sat
 	$(MAKE) rcc_job_shop_cp
+	$(MAKE) rcc_job_shop_sat
 
 .PHONY: test_cc_samples # Build and Run all C++ Samples (located in ortools/*/samples)
 test_cc_samples: cc
