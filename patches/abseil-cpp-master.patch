@@ -1,5 +1,5 @@
 diff --git a/CMake/AbseilHelpers.cmake b/CMake/AbseilHelpers.cmake
-index 0c93417..12198c9 100644
+index 0c93417..26ab7a5 100644
 --- a/CMake/AbseilHelpers.cmake
 +++ b/CMake/AbseilHelpers.cmake
 @@ -36,80 +36,129 @@ set(ABSL_IDE_FOLDER Abseil)
@@ -8,11 +8,11 @@ index 0c93417..12198c9 100644
  function(absl_library)
 +  set(options
 +    DISABLE_INSTALL # keep that in case we want to support installation one day
-+    )
++  )
 +  set(oneValueArgs
 +    TARGET
 +    EXPORT_NAME
-+    )
++  )
 +  set(multiValueArgs
 +    SOURCES
 +    PUBLIC_HEADER
@@ -21,7 +21,7 @@ index 0c93417..12198c9 100644
 +    PRIVATE_LIBRARIES
 +    PRIVATE_COMPILE_FLAGS
 +    PRIVATE_INCLUDE_DIRS
-+    )
++  )
    cmake_parse_arguments(ABSL_LIB
 -    "DISABLE_INSTALL" # keep that in case we want to support installation one day
 -    "TARGET;EXPORT_NAME"
@@ -30,8 +30,7 @@ index 0c93417..12198c9 100644
 +    "${oneValueArgs}"
 +    "${multiValueArgs}"
      ${ARGN}
--  )
-+    )
+   )
  
    set(_NAME ${ABSL_LIB_TARGET})
    string(TOUPPER ${_NAME} _UPPER_NAME)
@@ -66,7 +65,7 @@ index 0c93417..12198c9 100644
 +      PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/absl/${ABSL_LIB_EXPORT_NAME}
 +      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-+      )
++    )
 +  endif()
  endfunction()
  
@@ -78,17 +77,17 @@ index 0c93417..12198c9 100644
  function(absl_header_library)
 +  set(options
 +    DISABLE_INSTALL # keep that in case we want to support installation one day
-+    )
++  )
 +  set(oneValueArgs
 +    TARGET
 +    EXPORT_NAME
-+    )
++  )
 +  set(multiValueArgs
 +    PUBLIC_HEADER
 +    PUBLIC_INCLUDE_DIRS
 +    PUBLIC_LIBRARIES
 +    PRIVATE_COMPILE_FLAGS
-+    )
++  )
    cmake_parse_arguments(ABSL_HO_LIB
 -    "DISABLE_INSTALL"
 -    "EXPORT_NAME;TARGET"
@@ -97,10 +96,10 @@ index 0c93417..12198c9 100644
 +    "${oneValueArgs}"
 +    "${multiValueArgs}"
      ${ARGN}
--  )
--
--  set(_NAME ${ABSL_HO_LIB_TARGET})
--
+   )
+ 
+   set(_NAME ${ABSL_HO_LIB_TARGET})
+ 
 -  set(__dummy_header_only_lib_file "${CMAKE_CURRENT_BINARY_DIR}/${_NAME}_header_only_dummy.cc")
 -
 -  if(NOT EXISTS ${__dummy_header_only_lib_file})
@@ -113,11 +112,10 @@ index 0c93417..12198c9 100644
 -       void ${_NAME}__header_fakesym() {}
 -      }  // namespace absl
 -      "
-     )
+-    )
 -  endif()
- 
-+  set(_NAME ${ABSL_HO_LIB_TARGET})
- 
+-
+-
 -  add_library(${_NAME} ${__dummy_header_only_lib_file})
 -  target_link_libraries(${_NAME} PUBLIC ${ABSL_HO_LIB_PUBLIC_LIBRARIES})
 +  add_library(${_NAME} INTERFACE)
@@ -147,11 +145,11 @@ index 0c93417..12198c9 100644
 +    install(TARGETS ${_NAME}
 +      EXPORT ${PROJECT_NAME}-targets
 +      #PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/absl/${_NAME}
-+      )
++    )
 +    install(FILES
 +      ${ABSL_HO_LIB_PUBLIC_HEADER}
 +      DESTINATION include/absl/${ABSL_HO_LIB_EXPORT_NAME}
-+      )
++    )
 +  endif()
  endfunction()
  
