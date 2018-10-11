@@ -247,10 +247,18 @@ index 04a6eb3..6fb78b4 100644
  
  
 diff --git a/absl/container/CMakeLists.txt b/absl/container/CMakeLists.txt
-index 9e40690..723b0c0 100644
+index 9e40690..677d07e 100644
 --- a/absl/container/CMakeLists.txt
 +++ b/absl/container/CMakeLists.txt
-@@ -53,6 +53,10 @@ absl_library(
+@@ -33,6 +33,7 @@ list(APPEND CONTAINER_INTERNAL_HEADERS
+   "internal/hash_policy_testing.h"
+   "internal/hash_policy_traits.h"
+   "internal/hashtable_debug.h"
++  "internal/hashtable_debug_hooks.h"
+   "internal/layout.h"
+   "internal/node_hash_policy.h"
+   "internal/raw_hash_map.h"
+@@ -53,6 +54,10 @@ absl_library(
      absl_container
    SOURCES
      "internal/raw_hash_set.cc"
@@ -261,7 +269,7 @@ index 9e40690..723b0c0 100644
    EXPORT_NAME
      container
  )
-@@ -69,9 +73,9 @@ list(APPEND TEST_INSTANCE_TRACKER_LIB_SRC
+@@ -69,9 +74,9 @@ list(APPEND TEST_INSTANCE_TRACKER_LIB_SRC
  )
  
  
@@ -273,7 +281,7 @@ index 9e40690..723b0c0 100644
    SOURCES
      ${TEST_INSTANCE_TRACKER_LIB_SRC}
    PUBLIC_LIBRARIES
-@@ -82,7 +86,7 @@ absl_library(
+@@ -82,7 +87,7 @@ absl_library(
  
  # test fixed_array_test
  set(FIXED_ARRAY_TEST_SRC "fixed_array_test.cc")
@@ -282,7 +290,7 @@ index 9e40690..723b0c0 100644
  
  absl_test(
    TARGET
-@@ -128,7 +132,7 @@ absl_test(
+@@ -128,7 +133,7 @@ absl_test(
  
  # test inlined_vector_test
  set(INLINED_VECTOR_TEST_SRC "inlined_vector_test.cc")
@@ -291,7 +299,7 @@ index 9e40690..723b0c0 100644
  
  absl_test(
    TARGET
-@@ -153,7 +157,8 @@ absl_test(
+@@ -153,7 +158,8 @@ absl_test(
  
  # test test_instance_tracker_test
  set(TEST_INSTANCE_TRACKER_TEST_SRC "internal/test_instance_tracker_test.cc")
@@ -301,7 +309,7 @@ index 9e40690..723b0c0 100644
  
  
  absl_test(
-@@ -172,5 +177,5 @@ absl_test(
+@@ -172,5 +178,5 @@ absl_test(
    SOURCES
      "internal/raw_hash_set_test.cc"
    PUBLIC_LIBRARIES
