@@ -1,8 +1,8 @@
 diff --git a/CMake/AbseilHelpers.cmake b/CMake/AbseilHelpers.cmake
-index 0c93417..cc9a984 100644
+index 0c93417..a9174d9 100644
 --- a/CMake/AbseilHelpers.cmake
 +++ b/CMake/AbseilHelpers.cmake
-@@ -36,80 +36,134 @@ set(ABSL_IDE_FOLDER Abseil)
+@@ -36,80 +36,139 @@ set(ABSL_IDE_FOLDER Abseil)
  # libraries are installed under CMAKE_INSTALL_FULL_LIBDIR by default
  #
  function(absl_library)
@@ -17,6 +17,7 @@ index 0c93417..cc9a984 100644
 +    SOURCES
 +    PUBLIC_HEADER
 +    INTERNAL_PUBLIC_HEADER
++    INTERNAL_STR_PUBLIC_HEADER
 +    PUBLIC_INCLUDE_DIRS
 +    PUBLIC_LIBRARIES
 +    PRIVATE_LIBRARIES
@@ -70,6 +71,10 @@ index 0c93417..cc9a984 100644
 +    install(FILES
 +      ${ABSL_LIB_INTERNAL_PUBLIC_HEADER}
 +      DESTINATION include/absl/${ABSL_LIB_EXPORT_NAME}/internal
++    )
++    install(FILES
++      ${ABSL_LIB_INTERNAL_STR_PUBLIC_HEADER}
++      DESTINATION include/absl/${ABSL_LIB_EXPORT_NAME}/internal/str_format
 +    )
 +  endif()
  endfunction()
@@ -372,7 +377,7 @@ index 3360b2e..a8d8f92 100644
      absl::int128
    EXPORT_NAME
 diff --git a/absl/strings/CMakeLists.txt b/absl/strings/CMakeLists.txt
-index f3e4162..09e1b51 100644
+index f3e4162..05b9145 100644
 --- a/absl/strings/CMakeLists.txt
 +++ b/absl/strings/CMakeLists.txt
 @@ -22,6 +22,7 @@ list(APPEND STRINGS_PUBLIC_HEADERS
@@ -383,7 +388,32 @@ index f3e4162..09e1b51 100644
    "string_view.h"
    "strip.h"
    "str_join.h"
-@@ -74,6 +75,10 @@ absl_library(
+@@ -30,7 +31,6 @@ list(APPEND STRINGS_PUBLIC_HEADERS
+   "substitute.h"
+ )
+ 
+-
+ list(APPEND STRINGS_INTERNAL_HEADERS
+   "internal/char_map.h"
+   "internal/charconv_bigint.h"
+@@ -44,7 +44,15 @@ list(APPEND STRINGS_INTERNAL_HEADERS
+   "internal/utf8.h"
+ )
+ 
+-
++list(APPEND STRINGS_INTERNAL_STR_HEADERS
++  "internal/str_format/arg.h"
++  "internal/str_format/bind.h"
++  "internal/str_format/checker.h"
++  "internal/str_format/extension.h"
++  "internal/str_format/float_conversion.h"
++  "internal/str_format/output.h"
++  "internal/str_format/parser.h"
++)
+ 
+ # add string library
+ list(APPEND STRINGS_SRC
+@@ -74,6 +82,12 @@ absl_library(
      absl_strings
    SOURCES
      ${STRINGS_SRC}
@@ -391,10 +421,12 @@ index f3e4162..09e1b51 100644
 +    ${STRINGS_PUBLIC_HEADERS}
 +  INTERNAL_PUBLIC_HEADER
 +    ${STRINGS_INTERNAL_HEADERS}
++  INTERNAL_STR_PUBLIC_HEADER
++  ${STRINGS_INTERNAL_STR_HEADERS}
    PUBLIC_LIBRARIES
      ${STRINGS_PUBLIC_LIBRARIES}
    EXPORT_NAME
-@@ -85,7 +90,7 @@ absl_header_library(
+@@ -85,7 +99,7 @@ absl_header_library(
    TARGET
      absl_str_format
    PUBLIC_LIBRARIES
@@ -403,7 +435,7 @@ index f3e4162..09e1b51 100644
    EXPORT_NAME
      str_format
  )
-@@ -93,7 +98,7 @@ absl_header_library(
+@@ -93,7 +107,7 @@ absl_header_library(
  # str_format_internal
  absl_library(
    TARGET
@@ -412,7 +444,7 @@ index f3e4162..09e1b51 100644
    SOURCES
      "internal/str_format/arg.cc"
      "internal/str_format/bind.cc"
-@@ -109,7 +114,7 @@ absl_library(
+@@ -109,7 +123,7 @@ absl_library(
      "internal/str_format/output.h"
      "internal/str_format/parser.h"
    PUBLIC_LIBRARIES
@@ -421,7 +453,7 @@ index f3e4162..09e1b51 100644
      absl::strings
      absl::base
      absl::numeric
-@@ -120,7 +125,7 @@ absl_library(
+@@ -120,7 +134,7 @@ absl_library(
  # str_format_extension_internal
  absl_library(
    TARGET
