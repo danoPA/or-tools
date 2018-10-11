@@ -17,12 +17,11 @@
 #include <set>
 #include <unordered_set>
 
-#include "ortools/base/join.h"
+#include "absl/strings/match.h"
+#include "absl/strings/str_format.h"
+#include "absl/strings/string_view.h"
+#include "absl/strings/string_view_utils.h"
 #include "ortools/base/map_util.h"
-#include "ortools/base/string_view.h"
-#include "ortools/base/stringpiece_utils.h"
-#include "ortools/base/stringprintf.h"
-#include "ortools/base/strutil.h"
 #include "ortools/flatzinc/logging.h"
 #include "ortools/graph/cliques.h"
 #include "ortools/util/saturated_arithmetic.h"
@@ -1303,7 +1302,7 @@ Presolver::RuleStatus Presolver::PresolveArrayIntElement(Constraint* ct,
     const std::string after = ct->arguments[2].Var()->DebugString();
     if (before != after) {
       log->append(absl::StrFormat(", reduce target variable from %s to %s",
-                                  before.c_str(), after.c_str()));
+                                  before, after));
       ct->presolve_propagation_done = true;
       return CONSTRAINT_REWRITTEN;
     }
@@ -1550,7 +1549,7 @@ Presolver::RuleStatus Presolver::PropagatePositiveLinear(Constraint* ct,
         if (bound < var->domain.Max()) {
           absl::StrAppendFormat(log,
                                 ", intersect %s with [0..%" GG_LL_FORMAT "d]",
-                                var->DebugString().c_str(), bound);
+                                var->DebugString(), bound);
           IntersectVarWithInterval(var, 0, bound);
         }
       }
@@ -1564,7 +1563,7 @@ Presolver::RuleStatus Presolver::PropagatePositiveLinear(Constraint* ct,
     if (bound > var->domain.Min()) {
       absl::StrAppendFormat(
           log, ", intersect %s with [%" GG_LL_FORMAT "d .. INT_MAX]",
-          var->DebugString().c_str(), bound);
+          var->DebugString(), bound);
       IntersectVarWithInterval(var, bound, kint64max);
       return CONSTRAINT_ALWAYS_TRUE;
     }
@@ -2004,7 +2003,7 @@ Presolver::RuleStatus Presolver::PresolveSimplifyElement(Constraint* ct,
           MarkChangedVariable(ct->arguments[0].Var());
         }
         log->append(absl::StrFormat("reduce index domain to %s",
-                                    ct->arguments[0].Var()->DebugString().c_str()));
+                                    ct->arguments[0].Var()->DebugString()));
       }
     }
   }
@@ -2139,7 +2138,7 @@ Presolver::RuleStatus Presolver::PresolveSimplifyExprElement(Constraint* ct,
         MarkChangedVariable(ct->arguments[0].Var());
       }
       log->append(absl::StrFormat("reduce index domain to %s",
-                                  ct->arguments[0].Var()->DebugString().c_str()));
+                                  ct->arguments[0].Var()->DebugString()));
     }
   }
 
@@ -2929,7 +2928,7 @@ Presolver::RuleStatus Presolver::PresolveRegular(Constraint* ct,
       if (HASVLOG) {
         absl::StrAppendFormat(log,
                               "reduce domain of variable %d from %s to %s; ",
-                              time, before.c_str(), vars[time]->DebugString().c_str());
+                              time, before, vars[time]->DebugString());
       }
     }
   }

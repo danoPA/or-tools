@@ -44,7 +44,7 @@ extern int orfz_debug;
 
 #if !defined(OR_TOOLS_FLATZINC_FLATZINC_TAB_HH_)
 #define OR_TOOLS_FLATZINC_FLATZINC_TAB_HH_
-#include "ortools/base/strutil.h"
+#include "absl/strings/match.h"
 #include "ortools/flatzinc/parser_util.h"
 
 // Tells flex to use the LexerInfo class to communicate with the bison parser.

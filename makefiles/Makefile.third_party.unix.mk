@@ -375,6 +375,8 @@ DYNAMIC_ABSL_LNK = -L$(UNIX_ABSL_DIR)/lib \
 -labsl_stack_consumption \
 -labsl_stacktrace \
 -labsl_strings \
+-labsl_str_format_extension_internal \
+-labsl_str_format_internal \
 -labsl_symbolize \
 -labsl_synchronization \
 -labsl_throw_delegate \

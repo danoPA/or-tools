@@ -18,13 +18,13 @@
 #include <limits>
 #include <unordered_map>
 
+#include "absl/strings/match.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
+#include "absl/strings/str_split.h"
+#include "absl/synchronization/mutex.h"
 #include "google/protobuf/text_format.h"
-#include "ortools/base/join.h"
 #include "ortools/base/map_util.h"
-#include "ortools/base/mutex.h"
-#include "ortools/base/split.h"
-#include "ortools/base/stringpiece_utils.h"
-#include "ortools/base/stringprintf.h"
 #include "ortools/base/threadpool.h"
 #include "ortools/base/timer.h"
 #include "ortools/flatzinc/checker.h"
@@ -224,7 +224,7 @@ void CpModelProtoWithMapping::FillConstraint(const fz::Constraint& fz_ct,
     FillAMinusBInDomain({kint64min, -1}, fz_ct, ct);
   } else if (fz_ct.type == "bool_gt" || fz_ct.type == "int_gt") {
     FillAMinusBInDomain({1, kint64max}, fz_ct, ct);
-  } else if (fz_ct.type == "bool_eq" || fz_ct.type == "int_eq" || 
+  } else if (fz_ct.type == "bool_eq" || fz_ct.type == "int_eq" ||
              fz_ct.type == "bool2int") {
     FillAMinusBInDomain({0, 0}, fz_ct, ct);
   } else if (fz_ct.type == "bool_ne" || fz_ct.type == "bool_not" ||

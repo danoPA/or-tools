@@ -21,7 +21,7 @@
 %code requires {
 #if !defined(OR_TOOLS_FLATZINC_FLATZINC_TAB_HH_)
 #define OR_TOOLS_FLATZINC_FLATZINC_TAB_HH_
-#include "ortools/base/strutil.h"
+#include "absl/strings/match.h"
 #include "ortools/flatzinc/parser_util.h"
 
 // Tells flex to use the LexerInfo class to communicate with the bison parser.
@@ -35,7 +35,7 @@ typedef operations_research::fz::LexerInfo YYSTYPE;
 
 // Code in the implementation file.
 %code {
-#include "ortools/base/stringpiece_utils.h"
+#include "absl/strings/string_view_utils.h"
 #include "ortools/flatzinc/parser_util.cc"
 
 using operations_research::fz::Annotation;
