@@ -1,8 +1,8 @@
 diff --git a/CMake/AbseilHelpers.cmake b/CMake/AbseilHelpers.cmake
-index 0c93417..3aeb77f 100644
+index 0c93417..46d7ba4 100644
 --- a/CMake/AbseilHelpers.cmake
 +++ b/CMake/AbseilHelpers.cmake
-@@ -36,80 +36,144 @@ set(ABSL_IDE_FOLDER Abseil)
+@@ -36,80 +36,150 @@ set(ABSL_IDE_FOLDER Abseil)
  # libraries are installed under CMAKE_INSTALL_FULL_LIBDIR by default
  #
  function(absl_library)
@@ -18,6 +18,7 @@ index 0c93417..3aeb77f 100644
 +    PUBLIC_HEADER
 +    INTERNAL_PUBLIC_HEADER
 +    INTERNAL_STR_PUBLIC_HEADER
++    INTERNAL_CCTZ_PUBLIC_HEADER
 +    PUBLIC_INCLUDE_DIRS
 +    PUBLIC_LIBRARIES
 +    PRIVATE_LIBRARIES
@@ -75,6 +76,11 @@ index 0c93417..3aeb77f 100644
 +    install(FILES
 +      ${ABSL_LIB_INTERNAL_STR_PUBLIC_HEADER}
 +      DESTINATION include/absl/${ABSL_LIB_EXPORT_NAME}/internal/str_format
++    )
++    install(FILES
++      ${ABSL_LIB_INTERNAL_CCTZ_PUBLIC_HEADER}
++      DESTINATION
++      include/absl/${ABSL_LIB_EXPORT_NAME}/internal/cctz/include/cctz
 +    )
 +  endif()
  endfunction()
@@ -545,20 +551,31 @@ index de0d7b7..d1e7802 100644
      ${SYNCHRONIZATION_PUBLIC_LIBRARIES}
    EXPORT_NAME
 diff --git a/absl/time/CMakeLists.txt b/absl/time/CMakeLists.txt
-index 53216cd..9cebfba 100644
+index 53216cd..7124bc8 100644
 --- a/absl/time/CMakeLists.txt
 +++ b/absl/time/CMakeLists.txt
-@@ -27,6 +27,9 @@ list(APPEND TIME_INTERNAL_HEADERS
-   "internal/cctz/include/cctz/civil_time_detail.h"
-   "internal/cctz/include/cctz/time_zone.h"
-   "internal/cctz/include/cctz/zone_info_source.h"
+@@ -23,6 +23,12 @@ list(APPEND TIME_PUBLIC_HEADERS
+ 
+ list(APPEND TIME_INTERNAL_HEADERS
+   "internal/test_util.h"
 +  "internal/get_current_time_chrono.inc"
 +  "internal/get_current_time_posix.inc"
 +  "internal/zoneinfo.inc"
++)
++
++list(APPEND TIME_INTERNAL_CCTZ_HEADERS
+   "internal/cctz/include/cctz/civil_time.h"
+   "internal/cctz/include/cctz/civil_time_detail.h"
+   "internal/cctz/include/cctz/time_zone.h"
+@@ -54,6 +60,7 @@ list(APPEND TIME_SRC
+   "internal/cctz/src/zone_info_source.cc"
+   ${TIME_PUBLIC_HEADERS}
+   ${TIME_INTERNAL_HEADERS}
++  ${TIME_INTERNAL_CCTZ_HEADERS}
  )
+ set(TIME_PUBLIC_LIBRARIES absl::base absl::stacktrace absl::int128 absl::strings)
  
- list(APPEND TIME_SRC
-@@ -62,6 +65,10 @@ absl_library(
+@@ -62,6 +69,12 @@ absl_library(
      absl_time
    SOURCES
      ${TIME_SRC}
@@ -566,6 +583,8 @@ index 53216cd..9cebfba 100644
 +    ${TIME_PUBLIC_HEADERS}
 +  INTERNAL_PUBLIC_HEADER
 +    ${TIME_INTERNAL_HEADERS}
++    INTERNAL_CCTZ_PUBLIC_HEADER
++    ${TIME_INTERNAL_CCTZ_HEADERS}
    PUBLIC_LIBRARIES
      ${TIME_PUBLIC_LIBRARIES}
    EXPORT_NAME
