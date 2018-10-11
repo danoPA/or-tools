@@ -1,8 +1,8 @@
 diff --git a/CMake/AbseilHelpers.cmake b/CMake/AbseilHelpers.cmake
-index 0c93417..a9174d9 100644
+index 0c93417..3aeb77f 100644
 --- a/CMake/AbseilHelpers.cmake
 +++ b/CMake/AbseilHelpers.cmake
-@@ -36,80 +36,139 @@ set(ABSL_IDE_FOLDER Abseil)
+@@ -36,80 +36,144 @@ set(ABSL_IDE_FOLDER Abseil)
  # libraries are installed under CMAKE_INSTALL_FULL_LIBDIR by default
  #
  function(absl_library)
@@ -94,6 +94,7 @@ index 0c93417..a9174d9 100644
 +  )
 +  set(multiValueArgs
 +    PUBLIC_HEADER
++    INTERNAL_PUBLIC_HEADER
 +    PUBLIC_INCLUDE_DIRS
 +    PUBLIC_LIBRARIES
 +    PRIVATE_COMPILE_FLAGS
@@ -159,6 +160,10 @@ index 0c93417..a9174d9 100644
 +    install(FILES
 +      ${ABSL_HO_LIB_PUBLIC_HEADER}
 +      DESTINATION include/absl/${ABSL_HO_LIB_EXPORT_NAME}
++    )
++    install(FILES
++      ${ABSL_HO_LIB_INTERNAL_PUBLIC_HEADER}
++      DESTINATION include/absl/${ABSL_HO_LIB_EXPORT_NAME}/internal
 +    )
 +  endif()
  endfunction()
@@ -491,19 +496,25 @@ index 53216cd..2037f1f 100644
      ${TIME_PUBLIC_LIBRARIES}
    EXPORT_NAME
 diff --git a/absl/types/CMakeLists.txt b/absl/types/CMakeLists.txt
-index 2f2e3a7..13a9620 100644
+index 2f2e3a7..f5cf3d3 100644
 --- a/absl/types/CMakeLists.txt
 +++ b/absl/types/CMakeLists.txt
-@@ -23,6 +23,22 @@ list(APPEND TYPES_PUBLIC_HEADERS
+@@ -23,6 +23,28 @@ list(APPEND TYPES_PUBLIC_HEADERS
    "variant.h"
  )
  
++list(APPEND TYPES_INTERNAL_HEADERS
++  "internal/variant.h"
++)
++
 +# type header library to install header files
 +absl_header_library(
 +  TARGET
 +    absl_types
 +  PUBLIC_HEADER
 +    ${TYPES_PUBLIC_HEADERS}
++  INTERNAL_PUBLIC_HEADER
++    ${TYPES_INTERNAL_HEADERS}
 +  PUBLIC_LIBRARIES
 +    absl::any
 +    absl::span
@@ -517,7 +528,7 @@ index 2f2e3a7..13a9620 100644
  
  # any library
  absl_header_library(
-@@ -123,7 +139,8 @@ absl_library(
+@@ -123,7 +145,8 @@ absl_library(
  
  # test any_test
  set(ANY_TEST_SRC "any_test.cc")
@@ -527,7 +538,7 @@ index 2f2e3a7..13a9620 100644
  
  absl_test(
    TARGET
-@@ -169,7 +186,8 @@ absl_test(
+@@ -169,7 +192,8 @@ absl_test(
  
  # test span_test
  set(SPAN_TEST_SRC "span_test.cc")
