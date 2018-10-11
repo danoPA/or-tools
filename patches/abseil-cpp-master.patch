@@ -1,8 +1,8 @@
 diff --git a/CMake/AbseilHelpers.cmake b/CMake/AbseilHelpers.cmake
-index 0c93417..26ab7a5 100644
+index 0c93417..cc9a984 100644
 --- a/CMake/AbseilHelpers.cmake
 +++ b/CMake/AbseilHelpers.cmake
-@@ -36,80 +36,129 @@ set(ABSL_IDE_FOLDER Abseil)
+@@ -36,80 +36,134 @@ set(ABSL_IDE_FOLDER Abseil)
  # libraries are installed under CMAKE_INSTALL_FULL_LIBDIR by default
  #
  function(absl_library)
@@ -16,6 +16,7 @@ index 0c93417..26ab7a5 100644
 +  set(multiValueArgs
 +    SOURCES
 +    PUBLIC_HEADER
++    INTERNAL_PUBLIC_HEADER
 +    PUBLIC_INCLUDE_DIRS
 +    PUBLIC_LIBRARIES
 +    PRIVATE_LIBRARIES
@@ -65,6 +66,10 @@ index 0c93417..26ab7a5 100644
 +      PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/absl/${ABSL_LIB_EXPORT_NAME}
 +      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++    )
++    install(FILES
++      ${ABSL_LIB_INTERNAL_PUBLIC_HEADER}
++      DESTINATION include/absl/${ABSL_LIB_EXPORT_NAME}/internal
 +    )
 +  endif()
  endfunction()
@@ -197,19 +202,21 @@ index fdf45c5..3404fc3 100644
      algorithm
  )
 diff --git a/absl/base/CMakeLists.txt b/absl/base/CMakeLists.txt
-index 04a6eb3..cc6f07c 100644
+index 04a6eb3..9478d0d 100644
 --- a/absl/base/CMakeLists.txt
 +++ b/absl/base/CMakeLists.txt
-@@ -76,6 +76,8 @@ absl_library(
+@@ -76,6 +76,10 @@ absl_library(
      absl_base
    SOURCES
      ${BASE_SRC}
 +  PUBLIC_HEADER
 +    ${BASE_PUBLIC_HEADERS}
++  INTERNAL_PUBLIC_HEADER
++    ${BASE_INTERNAL_HEADERS}
    PUBLIC_LIBRARIES
      absl_dynamic_annotations
      absl_spinlock_wait
-@@ -162,6 +164,8 @@ absl_library(
+@@ -162,6 +166,8 @@ absl_library(
      ${MALLOC_INTERNAL_SRC}
    PUBLIC_LIBRARIES
      absl_dynamic_annotations
@@ -219,19 +226,21 @@ index 04a6eb3..cc6f07c 100644
  
  
 diff --git a/absl/container/CMakeLists.txt b/absl/container/CMakeLists.txt
-index 9e40690..88c48f5 100644
+index 9e40690..723b0c0 100644
 --- a/absl/container/CMakeLists.txt
 +++ b/absl/container/CMakeLists.txt
-@@ -53,6 +53,8 @@ absl_library(
+@@ -53,6 +53,10 @@ absl_library(
      absl_container
    SOURCES
      "internal/raw_hash_set.cc"
 +  PUBLIC_HEADER
 +    ${CONTAINER_PUBLIC_HEADERS}
++  INTERNAL_PUBLIC_HEADER
++    ${CONTAINER_INTERNAL_HEADERS}
    EXPORT_NAME
      container
  )
-@@ -69,9 +71,9 @@ list(APPEND TEST_INSTANCE_TRACKER_LIB_SRC
+@@ -69,9 +73,9 @@ list(APPEND TEST_INSTANCE_TRACKER_LIB_SRC
  )
  
  
@@ -243,7 +252,7 @@ index 9e40690..88c48f5 100644
    SOURCES
      ${TEST_INSTANCE_TRACKER_LIB_SRC}
    PUBLIC_LIBRARIES
-@@ -82,7 +84,7 @@ absl_library(
+@@ -82,7 +86,7 @@ absl_library(
  
  # test fixed_array_test
  set(FIXED_ARRAY_TEST_SRC "fixed_array_test.cc")
@@ -252,7 +261,7 @@ index 9e40690..88c48f5 100644
  
  absl_test(
    TARGET
-@@ -128,7 +130,7 @@ absl_test(
+@@ -128,7 +132,7 @@ absl_test(
  
  # test inlined_vector_test
  set(INLINED_VECTOR_TEST_SRC "inlined_vector_test.cc")
@@ -261,7 +270,7 @@ index 9e40690..88c48f5 100644
  
  absl_test(
    TARGET
-@@ -153,7 +155,8 @@ absl_test(
+@@ -153,7 +157,8 @@ absl_test(
  
  # test test_instance_tracker_test
  set(TEST_INSTANCE_TRACKER_TEST_SRC "internal/test_instance_tracker_test.cc")
@@ -271,7 +280,7 @@ index 9e40690..88c48f5 100644
  
  
  absl_test(
-@@ -172,5 +175,5 @@ absl_test(
+@@ -172,5 +177,5 @@ absl_test(
    SOURCES
      "internal/raw_hash_set_test.cc"
    PUBLIC_LIBRARIES
@@ -301,10 +310,10 @@ index 4af2ec8..a118966 100644
      absl_stacktrace absl_leak_check
    EXPORT_NAME
 diff --git a/absl/hash/CMakeLists.txt b/absl/hash/CMakeLists.txt
-index 35081e3..99cf093 100644
+index 474092f..e10a447 100644
 --- a/absl/hash/CMakeLists.txt
 +++ b/absl/hash/CMakeLists.txt
-@@ -32,13 +32,15 @@ list(APPEND HASH_SRC
+@@ -31,13 +31,17 @@ list(APPEND HASH_SRC
    ${HASH_INTERNAL_HEADERS}
  )
  
@@ -318,6 +327,8 @@ index 35081e3..99cf093 100644
      ${HASH_SRC}
 +  PUBLIC_HEADER
 +    ${HASH_PUBLIC_HEADERS}
++  INTERNAL_PUBLIC_HEADER
++    ${HASH_INTERNAL_HEADERS}
    PUBLIC_LIBRARIES
      ${HASH_PUBLIC_LIBRARIES}
    EXPORT_NAME
@@ -361,19 +372,29 @@ index 3360b2e..a8d8f92 100644
      absl::int128
    EXPORT_NAME
 diff --git a/absl/strings/CMakeLists.txt b/absl/strings/CMakeLists.txt
-index f3e4162..ac8d12d 100644
+index f3e4162..09e1b51 100644
 --- a/absl/strings/CMakeLists.txt
 +++ b/absl/strings/CMakeLists.txt
-@@ -74,6 +74,8 @@ absl_library(
+@@ -22,6 +22,7 @@ list(APPEND STRINGS_PUBLIC_HEADERS
+   "match.h"
+   "numbers.h"
+   "str_cat.h"
++  "str_format.h"
+   "string_view.h"
+   "strip.h"
+   "str_join.h"
+@@ -74,6 +75,10 @@ absl_library(
      absl_strings
    SOURCES
      ${STRINGS_SRC}
 +  PUBLIC_HEADER
 +    ${STRINGS_PUBLIC_HEADERS}
++  INTERNAL_PUBLIC_HEADER
++    ${STRINGS_INTERNAL_HEADERS}
    PUBLIC_LIBRARIES
      ${STRINGS_PUBLIC_LIBRARIES}
    EXPORT_NAME
-@@ -85,7 +87,7 @@ absl_header_library(
+@@ -85,7 +90,7 @@ absl_header_library(
    TARGET
      absl_str_format
    PUBLIC_LIBRARIES
@@ -382,7 +403,7 @@ index f3e4162..ac8d12d 100644
    EXPORT_NAME
      str_format
  )
-@@ -93,7 +95,7 @@ absl_header_library(
+@@ -93,7 +98,7 @@ absl_header_library(
  # str_format_internal
  absl_library(
    TARGET
@@ -391,7 +412,7 @@ index f3e4162..ac8d12d 100644
    SOURCES
      "internal/str_format/arg.cc"
      "internal/str_format/bind.cc"
-@@ -109,7 +111,7 @@ absl_library(
+@@ -109,7 +114,7 @@ absl_library(
      "internal/str_format/output.h"
      "internal/str_format/parser.h"
    PUBLIC_LIBRARIES
@@ -400,7 +421,7 @@ index f3e4162..ac8d12d 100644
      absl::strings
      absl::base
      absl::numeric
-@@ -120,7 +122,7 @@ absl_library(
+@@ -120,7 +125,7 @@ absl_library(
  # str_format_extension_internal
  absl_library(
    TARGET
@@ -410,23 +431,25 @@ index f3e4162..ac8d12d 100644
      "internal/str_format/extension.cc"
      "internal/str_format/extension.h"
 diff --git a/absl/synchronization/CMakeLists.txt b/absl/synchronization/CMakeLists.txt
-index de0d7b7..330e70b 100644
+index de0d7b7..56a2298 100644
 --- a/absl/synchronization/CMakeLists.txt
 +++ b/absl/synchronization/CMakeLists.txt
-@@ -52,6 +52,8 @@ absl_library(
+@@ -52,6 +52,10 @@ absl_library(
      absl_synchronization
    SOURCES
      ${SYNCHRONIZATION_SRC}
 +  PUBLIC_HEADER
 +    ${SYNCHRONIZATION_PUBLIC_HEADERS}
++  INTERNAL_PUBLIC_HEADER
++    ${SYNCHRONIZATION_INTERNAL_HEADERS}
    PUBLIC_LIBRARIES
      ${SYNCHRONIZATION_PUBLIC_LIBRARIES}
    EXPORT_NAME
 diff --git a/absl/time/CMakeLists.txt b/absl/time/CMakeLists.txt
-index 0627236..21d46c9 100644
+index 53216cd..2037f1f 100644
 --- a/absl/time/CMakeLists.txt
 +++ b/absl/time/CMakeLists.txt
-@@ -60,6 +60,8 @@ absl_library(
+@@ -62,6 +62,8 @@ absl_library(
      absl_time
    SOURCES
      ${TIME_SRC}
