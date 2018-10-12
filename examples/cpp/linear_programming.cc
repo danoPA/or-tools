@@ -103,10 +103,6 @@ void RunAllExamples() {
   LOG(INFO) << "---- Linear programming example with CLP ----";
   RunLinearProgrammingExample(MPSolver::CLP_LINEAR_PROGRAMMING);
 #endif  // USE_CLP
-#if defined(USE_GLPK)
-    LOG(INFO) << "---- Linear programming example with GLPK ----";
-    RunLinearProgrammingExample(MPSolver::GLPK_LINEAR_PROGRAMMING);
-#endif  // USE_GLPK
 #if defined(USE_SLM)
   LOG(INFO) << "---- Linear programming example with Sulum ----";
   RunLinearProgrammingExample(MPSolver::SULUM_LINEAR_PROGRAMMING);
@@ -123,8 +119,8 @@ void RunAllExamples() {
 }  // namespace operations_research
 
 int main(int argc, char** argv) {
-  google::InitGoogleLogging(argv[0]);
-  FLAGS_logtostderr = 1;
+  base::SetFlag(&FLAGS_alsologtostderr, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   operations_research::RunAllExamples();
   return 0;
 }

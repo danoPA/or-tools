@@ -83,8 +83,7 @@ void RunAllExamples() {
 }  // namespace operations_research
 
 int main(int argc, char** argv) {
-  google::InitGoogleLogging(argv[0]);
-  FLAGS_logtostderr = 1;
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   operations_research::RunAllExamples();
   return 0;
 }
