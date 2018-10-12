@@ -23,6 +23,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include "ortools/base/small_map.h"
+#include "ortools/base/small_ordered_set.h"
 #include "ortools/constraint_solver/routing.h"
 #include "ortools/graph/christofides.h"
 #include "ortools/util/bitset.h"
@@ -56,9 +58,9 @@ class NodeDisjunctionFilter : public IntVarLocalSearchFilter {
     const int64 kUnassigned = -1;
     const Assignment::IntContainer& container = delta->IntVarContainer();
     const int delta_size = container.Size();
-    std::map<RoutingModel::DisjunctionIndex, int>
+    gtl::small_map<std::map<RoutingModel::DisjunctionIndex, int>>
         disjunction_active_deltas;
-    std::map<RoutingModel::DisjunctionIndex, int>
+    gtl::small_map<std::map<RoutingModel::DisjunctionIndex, int>>
         disjunction_inactive_deltas;
     bool lns_detected = false;
     // Update active/inactive count per disjunction for each element of delta.
@@ -1079,7 +1081,7 @@ class PathCumulFilter : public BasePathFilter {
   PathTransits delta_path_transits_;
   int64 delta_max_end_cumul_;
   // Note: small_ordered_set only support non-hash sets.
-  std::set<int> delta_paths_;
+  gtl::small_ordered_set<std::set<int>> delta_paths_;
   const std::string name_;
 
   RouteDimensionCumulOptimizer optimizer_;

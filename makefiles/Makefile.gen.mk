@@ -1802,9 +1802,8 @@ objs/sat/sat_solver.$O: ortools/sat/sat_solver.cc ortools/sat/sat_solver.h \
  ortools/util/running_stat.h ortools/sat/sat_decision.h \
  ortools/util/integer_pq.h ortools/util/time_limit.h \
  ortools/base/commandlineflags.h ortools/base/stl_util.h \
- ortools/base/sysinfo.h ortools/port/proto_utils.h ortools/port/sysinfo.h \
- ortools/sat/util.h ortools/base/random.h \
- ortools/util/saturated_arithmetic.h | $(OBJ_DIR)/sat
+ ortools/port/proto_utils.h ortools/port/sysinfo.h ortools/sat/util.h \
+ ortools/base/random.h ortools/util/saturated_arithmetic.h | $(OBJ_DIR)/sat
 	$(CCC) $(CFLAGS) -c $(SRC_DIR)$Sortools$Ssat$Ssat_solver.cc $(OBJ_OUT)$(OBJ_DIR)$Ssat$Ssat_solver.$O
 
 objs/sat/simplification.$O: ortools/sat/simplification.cc \
@@ -3244,8 +3243,8 @@ objs/constraint_solver/routing_parameters.$O: \
 	$(CCC) $(CFLAGS) -c $(SRC_DIR)$Sortools$Sconstraint_solver$Srouting_parameters.cc $(OBJ_OUT)$(OBJ_DIR)$Sconstraint_solver$Srouting_parameters.$O
 
 objs/constraint_solver/routing_search.$O: \
- ortools/constraint_solver/routing_search.cc \
- ortools/constraint_solver/routing.h \
+ ortools/constraint_solver/routing_search.cc ortools/base/small_map.h \
+ ortools/base/small_ordered_set.h ortools/constraint_solver/routing.h \
  ortools/base/adjustable_priority_queue-inl.h \
  ortools/base/adjustable_priority_queue.h ortools/base/basictypes.h \
  ortools/base/integral_types.h ortools/base/logging.h \
