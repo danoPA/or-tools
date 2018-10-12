@@ -2776,9 +2776,10 @@ bool RoutingModel::AppendAssignmentIfFeasible(
 
 void RoutingModel::LogSolution(const std::string& description,
                                int64 solution_cost, int64 start_time_ms) {
+  const std::string memory_str = MemoryUsage();
   LOG(INFO) << description << " (" << solution_cost
             << ", time = " << (solver_->wall_time() - start_time_ms)
-            << " ms, memory used = " << MemoryUsage() << ")";
+            << " ms, memory used = " << memory_str << ")";
 }
 
 const Assignment* RoutingModel::SolveFromAssignmentWithParameters(

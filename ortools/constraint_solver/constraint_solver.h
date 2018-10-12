@@ -2439,9 +2439,7 @@ class Solver {
   Decision* MakeAssignVariablesValues(const std::vector<IntVar*>& vars,
                                       const std::vector<int64>& values);
   Decision* MakeFailDecision();
-#if !defined(SWIG)
   Decision* MakeDecision(Action apply, Action refute);
-#endif  // !defined(SWIG)
 
   // Creates a decision builder which sequentially composes decision builders.
   // At each leaf of a decision builder, the next decision builder is therefore
@@ -2934,12 +2932,12 @@ class Solver {
 
   Decision* balancing_decision() const { return balancing_decision_.get(); }
 
-// Internal
+  // Internal
 #if !defined(SWIG)
   void set_fail_intercept(std::function<void()> fail_intercept) {
     fail_intercept_ = std::move(fail_intercept);
   }
-#endif  // SWIG
+#endif  // !defined(SWIG)
   void clear_fail_intercept() { fail_intercept_ = nullptr; }
   // Access to demon profiler.
   DemonProfiler* demon_profiler() const { return demon_profiler_; }
@@ -3268,7 +3266,7 @@ class PropagationBaseObject : public BaseObject {
   void set_action_on_fail(Solver::Action a) {
     solver_->set_action_on_fail(std::move(a));
   }
-#endif  // SWIG
+#endif  // !defined(SWIG)
 
   // This method clears the failure callback.
   void reset_action_on_fail() { solver_->reset_action_on_fail(); }

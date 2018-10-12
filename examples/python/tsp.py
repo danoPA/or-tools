@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-# This Python file uses the following encoding: utf-8
-# Copyright 2015 Tin Arm Engineering AB
-# Copyright 2018 Google LLC
+# Copyright 2010-2017 Google
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -13,118 +10,132 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Travelling Salesman Problem (TSP).
 
-   This is a sample using the routing library python wrapper to solve a TSP
-   problem.
-   A description of the problem can be found here:
+"""Traveling Salesman Sample.
+
+   This is a sample using the routing library python wrapper to solve a
+   Traveling Salesman Problem.
+   The description of the problem can be found here:
    http://en.wikipedia.org/wiki/Travelling_salesman_problem.
-
-   Distances are in meters.
+   The optimization engine uses local search to improve solutions, first
+   solutions being generated using a cheapest addition heuristic.
+   Optionally one can randomly forbid a set of random connections between nodes
+   (forbidden arcs).
 """
 
-from __future__ import print_function
-from six.moves import xrange
-from ortools.constraint_solver import pywrapcp
+
+import argparse
+from functools import partial
+import random
+
+from google.apputils import app
+import gflags
 from ortools.constraint_solver import routing_enums_pb2
+from ortools.constraint_solver import pywraprouting
+from ortools.constraint_solver import pywraproutingindexmanager
 
-###########################
-# Problem Data Definition #
-###########################
-def create_data_model():
-  """Stores the data for the problem"""
-  data = {}
-  # Locations in block unit
-  _locations = \
-          [(4, 4), # depot
-           (2, 0), (8, 0), # locations to visit
-           (0, 1), (1, 1),
-           (5, 2), (7, 2),
-           (3, 3), (6, 3),
-           (5, 5), (8, 5),
-           (1, 6), (2, 6),
-           (3, 7), (6, 7),
-           (0, 8), (7, 8)]
-  # Compute locations in meters using the block dimension defined as follow
-  # Manhattan average block: 750ft x 264ft -> 228m x 80m
-  # here we use: 114m x 80m city block
-  # src: https://nyti.ms/2GDoRIe "NY Times: Know Your distance"
-  data["locations"] = [(l[0] * 114, l[1] * 80) for l in _locations]
-  data["num_locations"] = len(data["locations"])
-  data["num_vehicles"] = 1
-  data["depot"] = 0
-  return data
+Parser=argparse.ArgumentParser()
 
-#######################
-# Problem Constraints #
-#######################
-def manhattan_distance(position_1, position_2):
-  """Computes the Manhattan distance between two points"""
-  return (
-      abs(position_1[0] - position_2[0]) + abs(position_1[1] - position_2[1]))
+parser.add_argument('tsp_size', default=10, type=int,
+                     'Size of Traveling Salesman Problem instance.')
+parser.add_arguments('tsp_use_random_matrix', default=True, type=bool,
+                     'Use random cost matrix.')
+parser.add_argument('tsp_random_forbidden_connections', default=0, type=int,
+                     'Number of random forbidden connections.')
+parser.add_argument('tsp_random_seed', default=0, type=int, 'Random seed.')
 
-def create_distance_evaluator(data):
-  """Creates callback to return distance between points."""
-  _distances = {}
-  # precompute distance between location to have distance callback in O(1)
-  for from_node in xrange(data["num_locations"]):
-    _distances[from_node] = {}
-    for to_node in xrange(data["num_locations"]):
-      if from_node == to_node:
-        _distances[from_node][to_node] = 0
-      else:
-        _distances[from_node][to_node] = (
-            manhattan_distance(data["locations"][from_node],
-                               data["locations"][to_node]))
 
-  def distance_evaluator(from_node, to_node):
-    """Returns the manhattan distance between the two nodes"""
-    return _distances[from_node][to_node]
+# Cost/distance functions.
 
-  return distance_evaluator
 
-###########
-# Printer #
-###########
-def print_solution(routing, assignment):
-  """Prints assignment on console"""
-  print('Objective: {}'.format(assignment.ObjectiveValue()))
-  index = routing.Start(0)
-  plan_output = 'Route:\n'
-  distance = 0
-  while not routing.IsEnd(index):
-    plan_output += ' {} ->'.format(routing.IndexToNode(index))
-    previous_index = index
-    index = assignment.Value(routing.NextVar(index))
-    distance += routing.GetArcCostForVehicle(previous_index, index, 0)
-  plan_output += ' {}\n'.format(routing.IndexToNode(index))
-  plan_output += 'Distance of the route: {}m\n'.format(distance)
-  print(plan_output)
+def Distance(manager, i, j):
+  """Sample function."""
+  # Put your distance code here.
+  node_i = manager.IndexToNode(i)
+  node_j = manager.IndexToNode(j)
+  return node_i + node_j
 
-########
-# Main #
-########
-def main():
-  """Entry point of the program"""
-  # Instantiate the data problem.
-  data = create_data_model()
 
-  # Create Routing Model
-  routing = pywrapcp.RoutingModel(
-      data["num_locations"],
-      data["num_vehicles"],
-      data["depot"])
-  # Define weight of each edge
-  distance_evaluator = create_distance_evaluator(data)
-  routing.SetArcCostEvaluatorOfAllVehicles(distance_evaluator)
+class RandomMatrix(object):
+  """Random matrix."""
 
-  # Setting first solution heuristic (cheapest addition).
-  search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
-  search_parameters.first_solution_strategy = (
-      routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
-  # Solve the problem.
-  assignment = routing.SolveWithParameters(search_parameters)
-  print_solution(routing, assignment)
+  def __init__(self, size, seed):
+    """Initialize random matrix."""
+
+    rand = random.Random()
+    rand.seed(seed)
+    distance_max = 100
+    self.matrix = {}
+    for from_node in xrange(size):
+      self.matrix[from_node] = {}
+      for to_node in xrange(size):
+        if from_node == to_node:
+          self.matrix[from_node][to_node] = 0
+        else:
+          self.matrix[from_node][to_node] = rand.randrange(distance_max)
+
+  def Distance(self, manager, from_index, to_index):
+    return self.matrix[manager.IndexToNode(from_index)][manager.IndexToNode(
+        to_index)]
+
+
+def main(args):
+  # Create routing model
+  if args.tsp_size > 0:
+    # TSP of size args.tsp_size
+    # Second argument = 1 to build a single tour (it's a TSP).
+    # Nodes are indexed from 0 to args_tsp_size - 1, by default the start of
+    # the route is node 0.
+    manager = pywraproutingindexmanager.RoutingIndexManager(
+        args.tsp_size, 1, 0)
+    routing = pywraprouting.RoutingModel(manager)
+    search_parameters = pywraprouting.DefaultRoutingSearchParameters()
+    # Setting first solution heuristic (cheapest addition).
+    search_parameters.first_solution_strategy = (
+        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
+
+    # Setting the cost function.
+    # Put a callback to the distance accessor here. The callback takes two
+    # arguments (the from and to node indices) and returns the distance between
+    # these indices.
+    cost = 0
+    if args.tsp_use_random_matrix:
+      matrix = RandomMatrix(args.tsp_size, args.tsp_random_seed)
+      cost = routing.RegisterTransitCallback(partial(matrix.Distance, manager))
+    else:
+      cost = routing.RegisterTransitCallback(partial(Distance, manager))
+    routing.SetArcCostEvaluatorOfAllVehicles(cost)
+    # Forbid node connections (randomly).
+    rand = random.Random()
+    rand.seed(args.tsp_random_seed)
+    forbidden_connections = 0
+    while forbidden_connections < args.tsp_random_forbidden_connections:
+      from_node = rand.randrange(args.tsp_size - 1)
+      to_node = rand.randrange(args.tsp_size - 1) + 1
+      if routing.NextVar(from_node).Contains(to_node):
+        print 'Forbidding connection ' + str(from_node) + ' -> ' + str(to_node)
+        routing.NextVar(from_node).RemoveValue(to_node)
+        forbidden_connections += 1
+
+    # Solve, returns a solution if any.
+    assignment = routing.Solve()
+    if assignment:
+      # Solution cost.
+      print assignment.ObjectiveValue()
+      # Inspect solution.
+      # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1
+      route_number = 0
+      node = routing.Start(route_number)
+      route = ''
+      while not routing.IsEnd(node):
+        route += str(node) + ' -> '
+        node = assignment.Value(routing.NextVar(node))
+      route += '0'
+      print route
+    else:
+      print 'No solution found.'
+  else:
+    print 'Specify an instance greater than 0.'
 
 if __name__ == '__main__':
-  main()
+  main(Parser.parse_args())
