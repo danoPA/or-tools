@@ -29,6 +29,7 @@ endif
 
 # Main target
 .PHONY: cc # Build C++ OR-Tools library.
+.PHONY: check_cc # Quick check only running few C++ OR-Tools examples.
 .PHONY: test_cc # Run all C++ OR-Tools examples.
 .PHONY: test_fz # Run all Flatzinc OR-Tools examples.
 ifndef HAS_CCC
@@ -36,14 +37,12 @@ cc:
 	@echo CCC = $(CCC)
 	$(warning Cannot find '$@' command which is needed for build. Please make sure it is installed and in system PATH.)
 
-test_cc: cc
 check_cc: cc
+test_cc: cc
 test_fz: cc
 else
 cc: $(OR_TOOLS_LIBS)
 
-# Quick check only running same examples than on optimization site
-.PHONY: check_cc
 check_cc: check_cc_examples
 
 test_cc: \
@@ -399,7 +398,32 @@ $(OBJ_DIR)/sat_runner.$O: \
 ############################
 ##  CPP Examples/Samples  ##
 ############################
-.PHONY: test_cc_tests # Build and Run all C++ Examples (located in examples/tests)
+.PHONY: check_cc_examples
+check_cc_examples: cc
+	$(MAKE) rcc_linear_programming
+	$(MAKE) rcc_constraint_programming_cp
+	$(MAKE) rcc_constraint_programming_sat
+	$(MAKE) rcc_rabbits_pheasants_cp
+	$(MAKE) rcc_rabbits_pheasants_sat
+#	$(MAKE) rcc_cryptarithmetic_cp
+#	$(MAKE) rcc_cryptarithmetic_sat
+#	$(MAKE) rcc_nqueens_cp
+#	$(MAKE) rcc_nqueens_sat
+	$(MAKE) rcc_integer_programming
+	$(MAKE) rcc_tsp
+	$(MAKE) rcc_vrp
+#	$(MAKE) rcc_cvrp
+#	$(MAKE) rcc_cvrptw
+	$(MAKE) rcc_knapsack
+	$(MAKE) rcc_max_flow
+	$(MAKE) rcc_min_cost_flow
+	$(MAKE) rcc_assignment
+	$(MAKE) rcc_nurses_cp
+	$(MAKE) rcc_nurses_sat
+	$(MAKE) rcc_job_shop_cp
+	$(MAKE) rcc_job_shop_sat
+
+.PHONY: test_cc_tests # Build and Run all C++ tests (located in examples/tests)
 test_cc_tests: cc
 	$(MAKE) rcc_ac4r_table_test
 	$(MAKE) rcc_boolean_test
@@ -482,25 +506,6 @@ $(OBJ_DIR)/%.$O: $(CC_EX_DIR)/%.cc \
  $(GRAPH_DEPS) $(ALGORITHMS_DEPS) \
  | $(OBJ_DIR)
 	$(CCC) $(CFLAGS) -c $(CC_EX_PATH)$S$*.cc $(OBJ_OUT)$(OBJ_DIR)$S$*.$O
-
-.PHONY: check_cc_examples # Build and Run few C++ Examples
-check_cc_examples:
-	$(MAKE) rcc_linear_programming
-	$(MAKE) rcc_integer_programming
-	$(MAKE) rcc_constraint_programming_cp
-	$(MAKE) rcc_constraint_programming_sat
-	$(MAKE) rcc_rabbits_pheasants_cp
-	$(MAKE) rcc_rabbits_pheasants_sat
-	$(MAKE) rcc_tsp
-	$(MAKE) rcc_vrp
-	$(MAKE) rcc_knapsack
-	$(MAKE) rcc_max_flow
-	$(MAKE) rcc_min_cost_flow
-	$(MAKE) rcc_assignment
-	$(MAKE) rcc_nurses_cp
-	$(MAKE) rcc_nurses_sat
-	$(MAKE) rcc_job_shop_cp
-	$(MAKE) rcc_job_shop_sat
 
 .PHONY: test_cc_samples # Build and Run all C++ Samples (located in ortools/*/samples)
 test_cc_samples: cc
