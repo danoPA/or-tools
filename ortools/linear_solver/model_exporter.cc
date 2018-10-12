@@ -211,9 +211,7 @@ std::string DoubleToStringWithForcedSign(double d) {
   return absl::StrCat((d < 0 ? "" : "+"), (d));
 }
 
-std::string DoubleToString(double d) {
-  return absl::StrCat((d));
-}
+std::string DoubleToString(double d) { return absl::StrCat((d)); }
 
 }  // namespace
 

@@ -22,7 +22,6 @@
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
-
 #include <utility>
 #include "ortools/constraint_solver/routing.h"
 #include "ortools/graph/christofides.h"

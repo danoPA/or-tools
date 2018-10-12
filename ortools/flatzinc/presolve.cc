@@ -19,8 +19,8 @@
 
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
+#include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
-#include "absl/strings/string_view_utils.h"
 #include "ortools/base/map_util.h"
 #include "ortools/flatzinc/logging.h"
 #include "ortools/graph/cliques.h"
@@ -527,7 +527,7 @@ Presolver::RuleStatus Presolver::Unreify(Constraint* ct, std::string* log) {
   if (!last_argument.HasOneValue()) {
     return NOT_CHANGED;
   }
-  DCHECK(strings::EndsWith(ct->type, "_reif")) << ct->DebugString();
+  DCHECK(absl::EndsWith(ct->type, "_reif")) << ct->DebugString();
   ct->type.resize(ct->type.size() - 5);
   ct->RemoveTargetVariable();
   if (last_argument.Value() == 1) {
@@ -2974,13 +2974,13 @@ Presolver::RuleStatus Presolver::PresolveDiffN(Constraint* ct,
     });                                                               \
   }
 #define CALL_PREFIX(ct, t, method)                                    \
-  if (ct->active && strings::StartsWith(ct->type, t)) {               \
+  if (ct->active && absl::StartsWith(ct->type, t)) {                  \
     ApplyRule(ct, #method, [this](Constraint* ct, std::string* log) { \
       return method(ct, log);                                         \
     });                                                               \
   }
 #define CALL_SUFFIX(ct, t, method)                                    \
-  if (ct->active && strings::EndsWith(ct->type, t)) {                 \
+  if (ct->active && absl::EndsWith(ct->type, t)) {                    \
     ApplyRule(ct, #method, [this](Constraint* ct, std::string* log) { \
       return method(ct, log);                                         \
     });                                                               \
@@ -2990,13 +2990,13 @@ Presolver::RuleStatus Presolver::PresolveDiffN(Constraint* ct,
 void Presolver::PresolveOneConstraint(Constraint* ct) {
   CALL_SUFFIX(ct, "_reif", Unreify);
   CALL_TYPE(ct, "bool2int", PresolveBool2Int);
-  if (strings::StartsWith(ct->type, "int_")) {
+  if (absl::StartsWith(ct->type, "int_")) {
     CALL_TYPE(ct, "int_le", PresolveInequalities);
     CALL_TYPE(ct, "int_lt", PresolveInequalities);
     CALL_TYPE(ct, "int_ge", PresolveInequalities);
     CALL_TYPE(ct, "int_gt", PresolveInequalities);
   }
-  if (strings::StartsWith(ct->type, "bool_")) {
+  if (absl::StartsWith(ct->type, "bool_")) {
     CALL_TYPE(ct, "bool_le", PresolveInequalities);
     CALL_TYPE(ct, "bool_lt", PresolveInequalities);
     CALL_TYPE(ct, "bool_ge", PresolveInequalities);
@@ -3013,7 +3013,7 @@ void Presolver::PresolveOneConstraint(Constraint* ct) {
   CALL_TYPE(ct, "set_not_in", PresolveSetNotIn);
   CALL_TYPE(ct, "set_in_reif", PresolveSetInReif);
 
-  if (strings::StartsWith(ct->type, "int_lin_")) {
+  if (absl::StartsWith(ct->type, "int_lin_")) {
     CALL_TYPE(ct, "int_lin_gt", PresolveIntLinGt);
     CALL_TYPE(ct, "int_lin_lt", PresolveIntLinLt);
     CALL_PREFIX(ct, "int_lin_", SimplifyLinear);
@@ -3030,7 +3030,7 @@ void Presolver::PresolveOneConstraint(Constraint* ct) {
     CALL_TYPE(ct, "int_lin_eq_reif", SimplifyIntLinEqReif);
   }
 
-  if (strings::StartsWith(ct->type, "array_")) {
+  if (absl::StartsWith(ct->type, "array_")) {
     CALL_TYPE(ct, "array_bool_and", PresolveArrayBoolAnd);
     CALL_TYPE(ct, "array_bool_or", PresolveArrayBoolOr);
     CALL_TYPE(ct, "array_int_element", PresolveSimplifyElement);
@@ -3040,7 +3040,7 @@ void Presolver::PresolveOneConstraint(Constraint* ct) {
     CALL_TYPE(ct, "array_var_bool_element", PresolveSimplifyExprElement);
   }
 
-  if (strings::StartsWith(ct->type, "int_")) {
+  if (absl::StartsWith(ct->type, "int_")) {
     CALL_TYPE(ct, "int_div", PresolveIntDiv);
     CALL_TYPE(ct, "int_times", PresolveIntTimes);
     CALL_TYPE(ct, "int_eq", PresolveIntEq);
@@ -3055,7 +3055,7 @@ void Presolver::PresolveOneConstraint(Constraint* ct) {
     CALL_TYPE(ct, "int_mod", PresolveIntMod);
   }
 
-  if (strings::StartsWith(ct->type, "bool_")) {
+  if (absl::StartsWith(ct->type, "bool_")) {
     CALL_TYPE(ct, "bool_eq", PresolveIntEq);
     CALL_TYPE(ct, "bool_ne", PresolveIntNe);
     CALL_TYPE(ct, "bool_not", PresolveIntNe);
@@ -3723,7 +3723,7 @@ void CheckRegroupStart(Constraint* ct, Constraint** start,
 //  - *_reif: arity
 //  - otherwise arity + 100.
 int SortWeight(Constraint* ct) {
-  int arity = strings::EndsWith(ct->type, "_reif") ? 0 : 100;
+  int arity = absl::EndsWith(ct->type, "_reif") ? 0 : 100;
   for (const Argument& arg : ct->arguments) {
     arity += arg.variables.size();
   }

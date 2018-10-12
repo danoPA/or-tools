@@ -113,8 +113,8 @@ Model ParseFlatzincModel(const std::string& input, bool input_is_filename) {
   timer.Start();
   // Read model.
   std::string problem_name = input_is_filename ? input : FLAGS_fz_model_name;
-  if (input_is_filename || strings::EndsWith(problem_name, ".fzn")) {
-    CHECK(strings::EndsWith(problem_name, ".fzn"));
+  if (input_is_filename || absl::EndsWith(problem_name, ".fzn")) {
+    CHECK(absl::EndsWith(problem_name, ".fzn"));
     problem_name.resize(problem_name.size() - 4);
     const size_t found = problem_name.find_last_of("/\\");
     if (found != std::string::npos) {

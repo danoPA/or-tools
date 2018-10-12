@@ -18,7 +18,6 @@
 #include <limits>
 #include <unordered_map>
 
-#include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_split.h"
@@ -357,7 +356,7 @@ void CpModelProtoWithMapping::FillConstraint(const fz::Constraint& fz_ct,
       arg->set_index(LookupVar(fz_ct.arguments[0]));
       arg->set_target(LookupVar(fz_ct.arguments[2]));
 
-      if (!strings::EndsWith(fz_ct.type, "no_offset")) {
+      if (!absl::EndsWith(fz_ct.type, "no_offset")) {
         // Add a dummy variable at position zero because flatzinc index start at
         // 1.
         // TODO(user): Make sure that zero is not in the index domain...
@@ -367,7 +366,7 @@ void CpModelProtoWithMapping::FillConstraint(const fz::Constraint& fz_ct,
     } else {
       // Special case added by the presolve (not in flatzinc). We encode this
       // as a table constraint.
-      CHECK(!strings::EndsWith(fz_ct.type, "no_offset"));
+      CHECK(!absl::EndsWith(fz_ct.type, "no_offset"));
       auto* arg = ct->mutable_table();
 
       // the constraint is:
@@ -648,7 +647,7 @@ void CpModelProtoWithMapping::FillReifConstraint(const fz::Constraint& fz_ct,
                                                  ConstraintProto* ct) {
   // Start by adding a non-reified version of the same constraint.
   fz::Constraint copy = fz_ct;
-  if (strings::EndsWith(fz_ct.type, "_reif")) {
+  if (absl::EndsWith(fz_ct.type, "_reif")) {
     copy.type = fz_ct.type.substr(0, fz_ct.type.size() - 5);  // Remove _reif.
   } else {
     copy.type = fz_ct.type;
@@ -881,7 +880,7 @@ void SolveFzWithCpModelProto(const fz::Model& fz_model,
     if (fz_ct == nullptr || !fz_ct->active) continue;
     ConstraintProto* ct = m.proto.add_constraints();
     ct->set_name(fz_ct->type);
-    if (strings::EndsWith(fz_ct->type, "_reif") ||
+    if (absl::EndsWith(fz_ct->type, "_reif") ||
         fz_ct->type == "array_bool_or" || fz_ct->type == "array_bool_and") {
       m.FillReifConstraint(*fz_ct, ct);
     } else {

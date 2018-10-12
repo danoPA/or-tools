@@ -39,8 +39,8 @@ bool RcpspParser::ParseFile(const std::string& file_name) {
     return false;
   }
 
-  const bool is_rcpsp_max = absl::EndsWith(file_name, ".sch") ||
-                            absl::EndsWith(file_name, ".SCH");
+  const bool is_rcpsp_max =
+      absl::EndsWith(file_name, ".sch") || absl::EndsWith(file_name, ".SCH");
   const bool is_patterson = absl::EndsWith(file_name, ".rcp");
   load_status_ = HEADER_SECTION;
 

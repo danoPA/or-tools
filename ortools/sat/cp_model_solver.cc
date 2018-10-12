@@ -1607,10 +1607,9 @@ std::string CpSolverResponseStats(const CpSolverResponse& response) {
     absl::StrAppend(&result, "\nobjective: NA");
     absl::StrAppend(&result, "\nbest_bound: NA");
   } else {
-    absl::StrAppend(&result, "\nobjective: ",
-                    (response.objective_value()));
-    absl::StrAppend(&result, "\nbest_bound: ",
-                    (response.best_objective_bound()));
+    absl::StrAppend(&result, "\nobjective: ", (response.objective_value()));
+    absl::StrAppend(&result,
+                    "\nbest_bound: ", (response.best_objective_bound()));
   }
 
   absl::StrAppend(&result, "\nbooleans: ", response.num_booleans());
@@ -1623,12 +1622,10 @@ std::string CpSolverResponseStats(const CpSolverResponse& response) {
                   "\npropagations: ", response.num_binary_propagations());
   absl::StrAppend(
       &result, "\ninteger_propagations: ", response.num_integer_propagations());
+  absl::StrAppend(&result, "\nwalltime: ", (response.wall_time()));
+  absl::StrAppend(&result, "\nusertime: ", (response.user_time()));
   absl::StrAppend(&result,
-                  "\nwalltime: ", (response.wall_time()));
-  absl::StrAppend(&result,
-                  "\nusertime: ", (response.user_time()));
-  absl::StrAppend(&result, "\ndeterministic_time: ",
-                  (response.deterministic_time()));
+                  "\ndeterministic_time: ", (response.deterministic_time()));
   absl::StrAppend(&result, "\n");
   return result;
 }

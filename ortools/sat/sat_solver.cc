@@ -26,7 +26,6 @@
 #include "ortools/base/logging.h"
 #include "ortools/base/map_util.h"
 #include "ortools/base/stl_util.h"
-#include "ortools/base/sysinfo.h"
 #include "ortools/port/proto_utils.h"
 #include "ortools/port/sysinfo.h"
 #include "ortools/sat/util.h"
@@ -128,7 +127,8 @@ std::string SatSolver::Indent() const {
 }
 
 bool SatSolver::IsMemoryLimitReached() const {
-  const int64 memory_usage = GetProcessMemoryUsage();
+  const int64 memory_usage =
+      ::operations_research::sysinfo::MemoryUsageProcess();
   const int64 kMegaByte = 1024 * 1024;
   return memory_usage > kMegaByte * parameters_->max_memory_in_mb();
 }

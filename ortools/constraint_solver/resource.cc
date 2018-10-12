@@ -27,8 +27,10 @@
 #include <utility>
 #include <vector>
 
+#include "absl/container/flat_hash_map.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
+#include "absl/strings/str_join.h"
 #include "ortools/base/commandlineflags.h"
 #include "ortools/base/integral_types.h"
 #include "ortools/base/logging.h"
@@ -1647,12 +1649,10 @@ class EdgeFinder : public Constraint {
   // Stack of updates to the new start min to do.
   std::vector<std::pair<IntervalVar*, int64>> start_min_update_;
 
-  typedef std::unordered_map<int64, UpdatesForADemand*> UpdateMap;
-
   // update_map_[d][i] is an integer such that if a task
   // whose demand is d cannot end before by_end_max_[i], then it cannot start
   // before update_map_[d][i].
-  UpdateMap update_map_;
+  absl::flat_hash_map<int64, UpdatesForADemand*> update_map_;
 
   // Has one task a demand min == 0
   Rev<bool> has_zero_demand_tasks_;
