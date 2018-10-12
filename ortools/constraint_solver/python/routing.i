@@ -16,6 +16,8 @@
 %include "ortools/base/base.i"
 
 %include "ortools/constraint_solver/python/constraint_solver.i"
+%include "ortools/constraint_solver/python/routing_types.i"
+%include "ortools/constraint_solver/python/routing_index_manager.i"
 // TODO(user): remove this when we no longer use callbacks in the routing.
 #define FATAL_CALLBACK_EXCEPTION
 %include "ortools/base/python/callbacks.i"

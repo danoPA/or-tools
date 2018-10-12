@@ -28,21 +28,20 @@ import argparse
 from functools import partial
 import random
 
-from google.apputils import app
-import gflags
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywraprouting
 from ortools.constraint_solver import pywraproutingindexmanager
 
 Parser=argparse.ArgumentParser()
 
-parser.add_argument('tsp_size', default=10, type=int,
-                     'Size of Traveling Salesman Problem instance.')
-parser.add_arguments('tsp_use_random_matrix', default=True, type=bool,
-                     'Use random cost matrix.')
-parser.add_argument('tsp_random_forbidden_connections', default=0, type=int,
-                     'Number of random forbidden connections.')
-parser.add_argument('tsp_random_seed', default=0, type=int, 'Random seed.')
+parser.add_argument('--tsp_size', default=10, type=int,
+                    help='Size of Traveling Salesman Problem instance.')
+parser.add_arguments('--tsp_use_random_matrix', default=True, type=bool,
+                     help='Use random cost matrix.')
+parser.add_argument('--tsp_random_forbidden_connections', default=0, type=int,
+                    help='Number of random forbidden connections.')
+parser.add_argument('--tsp_random_seed', default=0, type=int,
+                    help='Random seed.')
 
 
 # Cost/distance functions.
@@ -113,7 +112,7 @@ def main(args):
       from_node = rand.randrange(args.tsp_size - 1)
       to_node = rand.randrange(args.tsp_size - 1) + 1
       if routing.NextVar(from_node).Contains(to_node):
-        print 'Forbidding connection ' + str(from_node) + ' -> ' + str(to_node)
+        print('Forbidding connection ' + str(from_node) + ' -> ' + str(to_node))
         routing.NextVar(from_node).RemoveValue(to_node)
         forbidden_connections += 1
 
@@ -121,7 +120,7 @@ def main(args):
     assignment = routing.Solve()
     if assignment:
       # Solution cost.
-      print assignment.ObjectiveValue()
+      print(assignment.ObjectiveValue())
       # Inspect solution.
       # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1
       route_number = 0
@@ -131,11 +130,11 @@ def main(args):
         route += str(node) + ' -> '
         node = assignment.Value(routing.NextVar(node))
       route += '0'
-      print route
+      print(route)
     else:
-      print 'No solution found.'
+      print('No solution found.')
   else:
-    print 'Specify an instance greater than 0.'
+    print('Specify an instance greater than 0.')
 
 if __name__ == '__main__':
   main(Parser.parse_args())
